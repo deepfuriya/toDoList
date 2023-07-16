@@ -7,6 +7,9 @@ import android.view.ViewGroup
 import android.widget.CheckBox
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import kotlinx.android.synthetic.main.item_todo.view.*
+import org.w3c.dom.Text
+
 
 class TodoAdapter (private val list:MutableList<Todo>) : RecyclerView.Adapter<TodoAdapter.TodoViewHolder>() {
 
@@ -28,14 +31,30 @@ class TodoAdapter (private val list:MutableList<Todo>) : RecyclerView.Adapter<To
     }
 
     fun addToDoList(todo: Todo){
-        list.add(todo);
-        notifyItemInserted(list.size - 1)
+        list.add(todo)
+//        notifyItemInserted(list.size - 1)
+        notifyDataSetChanged()
+    }
+
+    fun removeFromToDoList(){
+        list.removeAll { todo ->
+            todo.isChecked
+        }
+        notifyDataSetChanged()
     }
 
     override fun onBindViewHolder(holder: TodoViewHolder, position: Int) {
         val current = list[position]
-        holder.itemView.findViewById<TextView>(R.id.todoTile).setText(current.title);
-//        holder.itemView.findViewById<CheckBox>(R.id.todoDone)
+
+        holder.itemView.apply {
+            todoTile.text = current.title
+            todoDone.isChecked = current.isChecked
+            strikeTrough(todoTile,todoDone.isChecked)
+            todoDone.setOnCheckedChangeListener { _, isChecked ->
+                strikeTrough(todoTile,isChecked)
+                current.isChecked = isChecked
+            }
+        }
 
     }
 
